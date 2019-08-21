@@ -4,12 +4,17 @@ gem 'rails', '3.2.22'
 gem 'rails_12factor'
 gem 'test-unit'
 gem 'bootstrap-sass', '2.1'
+gem 'bcrypt-ruby', '3.0.1'
 
 
 group :development, :test do
   gem 'sqlite3', '1.3.13'
   gem 'rspec-rails', '2.11.0'
    gem 'guard-rspec', '1.2.1'
+end
+
+group :development do
+  gem 'annotate', '2.5.0'
 end
 
 
