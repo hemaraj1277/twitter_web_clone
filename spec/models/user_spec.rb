@@ -8,6 +8,7 @@ describe User do
 
   subject { @user }
 
+  it { should respond_to(:admin) }
   it { should respond_to(:name) }
   it { should respond_to(:email) }
   it { should respond_to(:password_digest) }
@@ -15,8 +16,20 @@ describe User do
   it { should respond_to(:password_confirmation) }
   it { should respond_to(:remember_token) }  
   it { should respond_to(:authenticate) }
+  #it { should respond_to(:authenticate) }
+  it { should respond_to(:microposts) }
+  it { should_not be_admin }  
 
   it { should be_valid }
+
+  describe "with admin attribute set to 'true'" do
+    before do
+      @user.save!
+      @user.toggle!(:admin)
+    end
+
+    it { should be_admin }
+  end
 
    describe "remember token" do
     before { @user.save }
@@ -104,6 +117,35 @@ end
     end
 
     it { should_not be_valid }
+  end
+   describe "microposts" do
+      it { should have_content(m1.content) }
+      it { should have_content(m2.content) }
+      it { should have_content(user.microposts.count) }
+    end
+
+    describe "micropost associations" do
+
+    before { @user.save }
+    let!(:older_micropost) do
+      FactoryGirl.create(:micropost, user: @user, created_at: 1.day.ago)
+    end
+    let!(:newer_micropost) do
+      FactoryGirl.create(:micropost, user: @user, created_at: 1.hour.ago)
+    end
+
+    it "should have the right microposts in the right order" do
+      @user.microposts.should == [newer_micropost, older_micropost]
+    end
+
+      it "should destroy associated microposts" do
+      microposts = @user.microposts.dup
+      @user.destroy
+      microposts.should_not be_empty
+      microposts.each do |micropost|
+        Micropost.find_by_id(micropost.id).should be_nil
+      end
+    end
   end
 
 end
